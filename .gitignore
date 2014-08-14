@@ -1,0 +1,4 @@
+buld/
+*.class
+*private.xml
+*private/
