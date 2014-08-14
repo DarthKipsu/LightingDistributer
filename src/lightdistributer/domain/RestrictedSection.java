@@ -4,8 +4,8 @@ package lightdistributer.domain;
 public class RestrictedSection extends StakeInterval {
 	private int sMax;
 
-	public RestrictedSection(int stakeInterval, int sMax) {
-		super(stakeInterval);
+	public RestrictedSection(int beginning, int end, int sMax) {
+		super(beginning, end);
 		this.sMax = sMax;
 	}
 

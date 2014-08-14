@@ -5,8 +5,8 @@ public class OutsideCurve extends StakeInterval {
 	private int radius;
 	private int sMax;
 
-	public OutsideCurve(int stakeInterval, int sMax, int radius) {
-		super(stakeInterval);
+	public OutsideCurve(int beginning, int end, int sMax, int radius) {
+		super(beginning, end);
 		this.radius = radius;
 		this.sMax = setSmax(sMax);
 	}

@@ -4,8 +4,8 @@ package lightdistributer.domain;
 public class StraightSection extends StakeInterval {
 	private int sMax;
 
-	public StraightSection(int stakeInterval, int sMax) {
-		super(stakeInterval);
+	public StraightSection(int beginning, int end, int sMax) {
+		super(beginning, end);
 		this.sMax = sMax;
 	}
 
