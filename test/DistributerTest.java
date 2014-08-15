@@ -1,4 +1,5 @@
 
+import java.util.List;
 import lightdistributer.domain.Street;
 import lightdistributer.logic.Distributer;
 import org.junit.After;
@@ -9,12 +10,11 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 public class DistributerTest {
+	private Street street = new Street(50);
+	private Distributer distributer = new Distributer(street, 0);	
 	
 	public DistributerTest() {
 	}
-	
-	private Street street = new Street(50);
-	private Distributer distributer = new Distributer(street);	
 	
 	@BeforeClass
 	public static void setUpClass() {
@@ -51,6 +51,15 @@ public class DistributerTest {
 		int expected = 16;
 
 		assertEquals(expected, columnCount);
+	}
+
+	@Test
+	public void createsAsManyStakesAsNeededColumns() {
+		int columnCount = distributer.countNeededColumns();
+		List<Integer> stakes = distributer.getStakes();
+		System.out.println("stakes: " + stakes);
+
+		assertEquals(columnCount, stakes.size());
 	}
 	
 }

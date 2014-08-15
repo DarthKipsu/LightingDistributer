@@ -25,6 +25,10 @@ public abstract class StakeInterval {
 		return end;
 	}
 
+	public int length() {
+		return end - beginning;
+	}
+
 	public boolean isColumnsAllowed() {
 		return columnsAllowed;
 	}
