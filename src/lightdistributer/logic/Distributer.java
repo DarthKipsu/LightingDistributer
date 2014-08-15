@@ -3,10 +3,10 @@ package lightdistributer.logic;
 
 import lightdistributer.domain.Street;
 
-public class Distributor {
+public class Distributer {
 	private Street street;
 
-	public Distributor(Street street) {
+	public Distributer(Street street) {
 		this.street = street;
 	}
 

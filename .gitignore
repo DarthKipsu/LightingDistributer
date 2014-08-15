@@ -2,3 +2,4 @@ buld/
 *.class
 *private.xml
 *private/
+/build/
