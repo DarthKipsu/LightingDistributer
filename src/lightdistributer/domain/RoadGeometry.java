@@ -1,18 +1,18 @@
 
 package lightdistributer.domain;
 
-public abstract class StakeInterval {
+public abstract class RoadGeometry {
 	private int beginning;
 	private int end;
 	private boolean columnsAllowed;
 
-	public StakeInterval(int beginning, int end, boolean canBePlaced) {
+	public RoadGeometry(int beginning, int end, boolean canBePlaced) {
 		this.beginning = beginning;
 		this.end = end;
 		this.columnsAllowed = canBePlaced;
 	}
 
-	public int[] getStakeInterval() {
+	public int[] getRoadGeometry() {
 		int[] interval = {beginning, end};
 		return interval;
 	}

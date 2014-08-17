@@ -1,6 +1,6 @@
 
 import java.util.List;
-import lightdistributer.domain.Street;
+import lightdistributer.domain.Road;
 import lightdistributer.logic.Distributer;
 import org.junit.After;
 import org.junit.AfterClass;
@@ -10,8 +10,8 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 public class DistributerTest {
-	private Street street = new Street(50);
-	private Distributer distributer = new Distributer(street, 0);	
+	private Road road = new Road(50);
+	private Distributer distributer = new Distributer(road, 0);	
 	
 	public DistributerTest() {
 	}
@@ -26,10 +26,10 @@ public class DistributerTest {
 	
 	@Before
 	public void setUp() {
-		street.addStraightSection(100, true);
-		street.addOutsideCurve(280, true, 500);
-		street.addInsideCurve(340, true, 100);
-		street.addStraightSection(400, true);
+		road.addStraightSection(100, true);
+		road.addOutsideCurve(280, true, 500);
+		road.addInsideCurve(340, true, 100);
+		road.addStraightSection(400, true);
 	}
 	
 	@After
@@ -46,7 +46,7 @@ public class DistributerTest {
 	
 	@Test
 	public void countsNeededColumns2() {
-		street.addOutsideCurve(650, true, 350);
+		road.addOutsideCurve(650, true, 350);
 		int columnCount = distributer.countNeededColumns();
 		int expected = 16;
 

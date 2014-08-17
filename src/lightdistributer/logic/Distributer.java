@@ -3,19 +3,19 @@ package lightdistributer.logic;
 
 import java.util.ArrayList;
 import java.util.List;
-import lightdistributer.domain.StakeInterval;
-import lightdistributer.domain.Street;
+import lightdistributer.domain.RoadGeometry;
+import lightdistributer.domain.Road;
 
 public class Distributer {
-	private Street street;
-	private List<StakeInterval> stakeIntervals;
+	private Road road;
+	private List<RoadGeometry> geometry;
 	private List<Integer> stakes;
 	private int beginningStake;
 
-	public Distributer(Street street, int beginningStake) {
-		this.street = street;
+	public Distributer(Road road, int beginningStake) {
+		this.road = road;
 		this.beginningStake = beginningStake;
-		stakeIntervals = street.getStakeIntervals();
+		geometry = road.getRoadGeometry();
 	}
 
 	private void addStakes(int beginningStake) {
@@ -23,14 +23,14 @@ public class Distributer {
 		stakes.add(beginningStake);
 		double smoothing = getSmoothingFactor();
 		double leftOverFromPreviousInterval = 0;
-		for (int i=0; i<stakeIntervals.size(); i++) {
-			int sMax = stakeIntervals.get(i).getSmax();
+		for (int i=0; i<geometry.size(); i++) {
+			int sMax = geometry.get(i).getSmax();
 			if (leftOverFromPreviousInterval > 0) {
 				double spacingLeft = 1 -leftOverFromPreviousInterval;
 				int spacing = (int) (spacingLeft * (smoothing * sMax));
-				stakes.add(stakeIntervals.get(i).getBeginning() + spacing);
+				stakes.add(geometry.get(i).getBeginning() + spacing);
 			}
-			double columns = getIntervalColumns(stakeIntervals.get(i));
+			double columns = getIntervalColumns(geometry.get(i));
 			while (columns >= 1.0) {
 				stakes.add(previousStake() + (int) (smoothing * sMax));
 				columns--;
@@ -48,7 +48,7 @@ public class Distributer {
 		return stakes.get(stakes.size()-1);
 	}
 
-	private double getIntervalColumns(StakeInterval interval) {
+	private double getIntervalColumns(RoadGeometry interval) {
 		return (interval.getEnd() - previousStake()) /
 			(getSmoothingFactor() * interval.getSmax());
 	}
@@ -64,7 +64,7 @@ public class Distributer {
 
 	private double countExactColumns() {
 		double columns = 0.0;
-		for (StakeInterval interval : stakeIntervals) {
+		for (RoadGeometry interval : geometry) {
 			columns += interval.length() / (double) interval.getSmax();
 		}
 		return columns + 1;

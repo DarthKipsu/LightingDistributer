@@ -1,7 +1,7 @@
 
 import lightdistributer.domain.InsideCurve;
 import lightdistributer.domain.OutsideCurve;
-import lightdistributer.domain.StakeInterval;
+import lightdistributer.domain.RoadGeometry;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
@@ -32,8 +32,8 @@ public class CurveTest {
 
 	@Test
 	public void OutsideCurveWithRadiusUnder100() {
-		StakeInterval interval1 = new OutsideCurve(0, 500, true, 50, 100);
-		StakeInterval interval2 = new OutsideCurve(0, 500, true, 50, 50);
+		RoadGeometry interval1 = new OutsideCurve(0, 500, true, 50, 100);
+		RoadGeometry interval2 = new OutsideCurve(0, 500, true, 50, 50);
 		int sMax1 = interval1.getSmax();
 		int sMax2 = interval2.getSmax();
 		int expectedSmax = 40;
@@ -44,8 +44,8 @@ public class CurveTest {
 
 	@Test
 	public void OutsideCurveWithRadiusOver800() {
-		StakeInterval interval1 = new OutsideCurve(0, 500, true, 50, 800);
-		StakeInterval interval2 = new OutsideCurve(0, 500, true, 50, 1200);
+		RoadGeometry interval1 = new OutsideCurve(0, 500, true, 50, 800);
+		RoadGeometry interval2 = new OutsideCurve(0, 500, true, 50, 1200);
 		int sMax1 = interval1.getSmax();
 		int sMax2 = interval2.getSmax();
 		int expectedSmax = 50;
@@ -56,7 +56,7 @@ public class CurveTest {
 
 	@Test
 	public void OutsideCurveWithRadius200() {
-		StakeInterval interval = new OutsideCurve(0, 500, true, 50, 200);
+		RoadGeometry interval = new OutsideCurve(0, 500, true, 50, 200);
 		int sMax = interval.getSmax();
 		int expectedSmax = 43;
 
@@ -65,7 +65,7 @@ public class CurveTest {
 
 	@Test
 	public void OutsideCurveWithRadius400() {
-		StakeInterval interval = new OutsideCurve(0, 500, true, 50, 400);
+		RoadGeometry interval = new OutsideCurve(0, 500, true, 50, 400);
 		int sMax = interval.getSmax();
 		int expectedSmax = 46;
 
@@ -74,7 +74,7 @@ public class CurveTest {
 
 	@Test
 	public void OutsideCurveWithRadius600() {
-		StakeInterval interval = new OutsideCurve(0, 500, true, 50, 600);
+		RoadGeometry interval = new OutsideCurve(0, 500, true, 50, 600);
 		int sMax = interval.getSmax();
 		int expectedSmax = 48;
 
@@ -83,8 +83,8 @@ public class CurveTest {
 
 	@Test
 	public void InsideCurveWithRadiusUnder100() {
-		StakeInterval interval1 = new InsideCurve(0, 500, true, 50, 100);
-		StakeInterval interval2 = new InsideCurve(0, 500, true, 50, 50);
+		RoadGeometry interval1 = new InsideCurve(0, 500, true, 50, 100);
+		RoadGeometry interval2 = new InsideCurve(0, 500, true, 50, 50);
 		int sMax1 = interval1.getSmax();
 		int sMax2 = interval2.getSmax();
 		int expectedSmax = 32;
@@ -95,8 +95,8 @@ public class CurveTest {
 
 	@Test
 	public void InsideCurveWithRadiusOver800() {
-		StakeInterval interval1 = new InsideCurve(0, 500, true, 50, 800);
-		StakeInterval interval2 = new InsideCurve(0, 500, true, 50, 1200);
+		RoadGeometry interval1 = new InsideCurve(0, 500, true, 50, 800);
+		RoadGeometry interval2 = new InsideCurve(0, 500, true, 50, 1200);
 		int sMax1 = interval1.getSmax();
 		int sMax2 = interval2.getSmax();
 		int expectedSmax = 50;
@@ -107,7 +107,7 @@ public class CurveTest {
 	
 	@Test
 	public void InsideCurveWithRadius200() {
-		StakeInterval interval = new InsideCurve(0, 500, true, 50, 200);
+		RoadGeometry interval = new InsideCurve(0, 500, true, 50, 200);
 		int sMax = interval.getSmax();
 		int expectedSmax = 37;
 
@@ -116,7 +116,7 @@ public class CurveTest {
 
 	@Test
 	public void InsideCurveWithRadius400() {
-		StakeInterval interval = new InsideCurve(0, 500, true, 50, 400);
+		RoadGeometry interval = new InsideCurve(0, 500, true, 50, 400);
 		int sMax = interval.getSmax();
 		int expectedSmax = 43;
 
@@ -125,7 +125,7 @@ public class CurveTest {
 
 	@Test
 	public void InsideCurveWithRadius600() {
-		StakeInterval interval = new InsideCurve(0, 500, true, 50, 600);
+		RoadGeometry interval = new InsideCurve(0, 500, true, 50, 600);
 		int sMax = interval.getSmax();
 		int expectedSmax = 47;
 

@@ -1,7 +1,7 @@
 
 package lightdistributer.domain;
 
-public class InsideCurve extends StakeInterval {
+public class InsideCurve extends RoadGeometry {
 	private int radius;
 	private int sMax;
 

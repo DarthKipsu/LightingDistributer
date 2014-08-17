@@ -4,17 +4,17 @@ package lightdistributer.domain;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Street {
-	private List<StakeInterval> stakeIntervals;
+public class Road {
+	private List<RoadGeometry> geometry;
 	private int sMax;
 
-	public Street(int sMax) {
-		stakeIntervals = new ArrayList<StakeInterval>();
+	public Road(int sMax) {
+		geometry = new ArrayList<RoadGeometry>();
 		this.sMax = sMax;
 	}
 
 	public void addStraightSection(int beginning, int end, boolean columnsAllowed) {
-		stakeIntervals.add(new StraightSection(beginning, end, columnsAllowed, sMax));
+		geometry.add(new StraightSection(beginning, end, columnsAllowed, sMax));
 	}
 	
 	public void addStraightSection(int end, boolean columnsAllowed) {
@@ -22,7 +22,7 @@ public class Street {
 	}
 	
 	public void addOutsideCurve(int beginning, int end, boolean columnsAllowed, int radius) {
-		stakeIntervals.add(new OutsideCurve(beginning, end, columnsAllowed, sMax, radius));
+		geometry.add(new OutsideCurve(beginning, end, columnsAllowed, sMax, radius));
 	}
 	
 	public void addOutsideCurve(int end, boolean columnsAllowed, int radius) {
@@ -30,7 +30,7 @@ public class Street {
 	}
 	
 	public void addInsideCurve(int beginning, int end, boolean columnsAllowed, int radius) {
-		stakeIntervals.add(new InsideCurve(beginning, end, columnsAllowed, sMax, radius));
+		geometry.add(new InsideCurve(beginning, end, columnsAllowed, sMax, radius));
 	}
 	
 	public void addInsideCurve(int end, boolean columnsAllowed, int radius) {
@@ -38,12 +38,12 @@ public class Street {
 	}
 
 	private int sectionBeginning() {
-		if (stakeIntervals.isEmpty()) return 0;
-		else return stakeIntervals.get(stakeIntervals.size()-1).getEnd(); 
+		if (geometry.isEmpty()) return 0;
+		else return geometry.get(geometry.size()-1).getEnd(); 
 	}
 	
-	public List<StakeInterval> getStakeIntervals() {
-		return stakeIntervals;
+	public List<RoadGeometry> getRoadGeometry() {
+		return geometry;
 	}
 
 	public int getSMax() {
