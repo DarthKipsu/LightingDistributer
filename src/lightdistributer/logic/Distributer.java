@@ -1,7 +1,10 @@
 package lightdistributer.logic;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import lightdistributer.domain.RoadGeometry;
 import lightdistributer.domain.Road;
 
@@ -9,70 +12,86 @@ public class Distributer {
 
 	private Road road;
 	private List<RoadGeometry> geometry;
-	private List<Integer> stakes;
+	private Set<Integer> stakes;
+	private List<Integer> forcedPoints;
 	private int beginningStake;
-
+	
 	public Distributer(Road road, int beginningStake) {
 		this.road = road;
 		this.beginningStake = beginningStake;
 		geometry = road.getRoadGeometry();
 	}
 
-	private void addStakes(int beginningStake) {
-		stakes = new ArrayList<Integer>();
+	private void addStakes() {
+		stakes = new HashSet<>();
+		forcedPoints = new ArrayList<>();
+		int endStake = geometry.get(geometry.size()-1).getEnd();
+
 		stakes.add(beginningStake);
-		double smoothing = getSmoothingFactor();
-		double leftOverFromPreviousInterval = 0;
-		for (int i = 0; i < geometry.size(); i++) {
-			RoadGeometry interval = geometry.get(i);
-			int sMax = interval.getSmax();
-			if (leftOverFromPreviousInterval > 0) {
-				int end = interval.getEnd();
-				if (getIntervalColumns(interval) >= 1) {
-					double spacingLeft = 1 - leftOverFromPreviousInterval;
-					int spacing = (int) (spacingLeft * (smoothing * sMax));
-					stakes.add(interval.getBeginning() + spacing);
-				} else if(i==geometry.size()-1) {
-					stakes.add(end);
-				} else {
-					int intervalLength = interval.getEnd() - interval.getBeginning();
-					leftOverFromPreviousInterval += intervalLength / (smoothing * sMax);
-					continue;
+		forcedPoints.add(beginningStake);
+		
+		distributeInterval(beginningStake, endStake, 0);
+	}
+
+	private void distributeInterval(int beginning, int end, int i) {
+		List<Integer> stakeTemp = new ArrayList<>();
+		stakeTemp.add(beginning);
+		Double leftOvers = 0.0;
+
+		while (last(stakeTemp) <= end) {
+			int geometryEnd = geometry.get(i).getEnd();
+			int nextStake = nextStake(stakeTemp, i, leftOvers);
+			
+			if (geometryEnd >= nextStake) {
+				stakeTemp.add(nextStake);
+				leftOvers = 0.0;
+			} else if (geometry.size() == i+1) {
+				if (geometryEnd - last(stakeTemp) > 0.5*sMax(i)) {
+						stakeTemp.add(geometryEnd);
 				}
+				break;
+			} else {
+				leftOvers += (nextStake - geometryEnd) / (double) sMax(i);
+				i++;
 			}
-			double columns = getIntervalColumns(geometry.get(i));
-			while (columns >= 1.0) {
-				stakes.add(previousStake() + (int) (smoothing * sMax));
-				columns--;
-			}
-			leftOverFromPreviousInterval = columns;
 		}
+
+		stakes.addAll(stakeTemp);
+
+	}
+
+	private int nextStake(List<Integer> stakeTemp, int i, Double leftOvers) {
+		if (leftOvers > 0.0) {
+			return geometry.get(i).getBeginning() + (int) (leftOvers * sMax(i));
+		}
+		return last(stakeTemp) + sMax(i);
+	}
+
+	private int last(List<Integer> stakeTemp) {
+		return stakeTemp.get(stakeTemp.size()-1);
+	}
+
+	private int sMax(int i) {
+		return (int) (smoothingFactor() * geometry.get(i).getSmax());
 	}
 
 	public List<Integer> getStakes() {
-		addStakes(beginningStake);
-		return stakes;
+		addStakes();
+		List<Integer> stakeExport = new ArrayList<>(stakes);
+		Collections.sort(stakeExport);
+		return stakeExport;
 	}
 
-	private Integer previousStake() {
-		return stakes.get(stakes.size() - 1);
+	private double smoothingFactor() {
+		return exactColumnCount() / getNeededColumns();
 	}
 
-	private double getIntervalColumns(RoadGeometry interval) {
-		return (interval.getEnd() - previousStake())
-			/ (getSmoothingFactor() * interval.getSmax());
-	}
-
-	private double getSmoothingFactor() {
-		return countExactColumns() / countNeededColumns();
-	}
-
-	public int countNeededColumns() {
-		int columns = (int) Math.ceil(countExactColumns());
+	public int getNeededColumns() {
+		int columns = (int) Math.ceil(exactColumnCount());
 		return columns;
 	}
 
-	private double countExactColumns() {
+	private double exactColumnCount() {
 		double columns = 0.0;
 		for (RoadGeometry interval : geometry) {
 			columns += interval.length() / (double) interval.getSmax();
