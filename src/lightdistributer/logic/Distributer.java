@@ -1,4 +1,3 @@
-
 package lightdistributer.logic;
 
 import java.util.ArrayList;
@@ -7,6 +6,7 @@ import lightdistributer.domain.RoadGeometry;
 import lightdistributer.domain.Road;
 
 public class Distributer {
+
 	private Road road;
 	private List<RoadGeometry> geometry;
 	private List<Integer> stakes;
@@ -23,12 +23,22 @@ public class Distributer {
 		stakes.add(beginningStake);
 		double smoothing = getSmoothingFactor();
 		double leftOverFromPreviousInterval = 0;
-		for (int i=0; i<geometry.size(); i++) {
-			int sMax = geometry.get(i).getSmax();
+		for (int i = 0; i < geometry.size(); i++) {
+			RoadGeometry interval = geometry.get(i);
+			int sMax = interval.getSmax();
 			if (leftOverFromPreviousInterval > 0) {
-				double spacingLeft = 1 -leftOverFromPreviousInterval;
-				int spacing = (int) (spacingLeft * (smoothing * sMax));
-				stakes.add(geometry.get(i).getBeginning() + spacing);
+				int end = interval.getEnd();
+				if (getIntervalColumns(interval) >= 1) {
+					double spacingLeft = 1 - leftOverFromPreviousInterval;
+					int spacing = (int) (spacingLeft * (smoothing * sMax));
+					stakes.add(interval.getBeginning() + spacing);
+				} else if(i==geometry.size()-1) {
+					stakes.add(end);
+				} else {
+					int intervalLength = interval.getEnd() - interval.getBeginning();
+					leftOverFromPreviousInterval += intervalLength / (smoothing * sMax);
+					continue;
+				}
 			}
 			double columns = getIntervalColumns(geometry.get(i));
 			while (columns >= 1.0) {
@@ -45,18 +55,18 @@ public class Distributer {
 	}
 
 	private Integer previousStake() {
-		return stakes.get(stakes.size()-1);
+		return stakes.get(stakes.size() - 1);
 	}
 
 	private double getIntervalColumns(RoadGeometry interval) {
-		return (interval.getEnd() - previousStake()) /
-			(getSmoothingFactor() * interval.getSmax());
+		return (interval.getEnd() - previousStake())
+			/ (getSmoothingFactor() * interval.getSmax());
 	}
 
 	private double getSmoothingFactor() {
 		return countExactColumns() / countNeededColumns();
 	}
-	
+
 	public int countNeededColumns() {
 		int columns = (int) Math.ceil(countExactColumns());
 		return columns;

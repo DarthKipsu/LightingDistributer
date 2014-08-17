@@ -61,5 +61,20 @@ public class DistributerTest {
 
 		assertEquals(columnCount, stakes.size());
 	}
+
+	@Test
+	public void leaveIntervalEmptyIfNoColumnsAreNeeded() {
+		Road road2 = new Road(50);
+		road2.addStraightSection(70, true);
+		road2.addStraightSection(75, true);
+		road2.addStraightSection(95, true);
+		Distributer distributer2 = new Distributer(road2, 0);
+
+		int neededColumns = distributer2.countNeededColumns();
+		int distributedStakeCount = distributer2.getStakes().size();
+		System.out.println("stakes: " + distributer2.getStakes());
+
+		assertEquals(neededColumns, distributedStakeCount);
+	}
 	
 }
