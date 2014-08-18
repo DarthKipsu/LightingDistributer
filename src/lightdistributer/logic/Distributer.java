@@ -12,10 +12,10 @@ public class Distributer {
 
 	private Road road;
 	private List<RoadGeometry> geometry;
-	private Set<Integer> stakes;
+	private List<Integer> stakes;
 	private List<Integer> forcedPoints;
 	private int beginningStake;
-	
+
 	public Distributer(Road road, int beginningStake) {
 		this.road = road;
 		this.beginningStake = beginningStake;
@@ -23,14 +23,16 @@ public class Distributer {
 	}
 
 	private void addStakes() {
-		stakes = new HashSet<>();
-		forcedPoints = new ArrayList<>();
-		int endStake = geometry.get(geometry.size()-1).getEnd();
-
-		stakes.add(beginningStake);
-		forcedPoints.add(beginningStake);
-		
+		int endStake = geometry.get(geometry.size() - 1).getEnd();
+		createNewStakesAndForcedPoints();
 		distributeInterval(beginningStake, endStake, 0);
+	}
+
+	private void createNewStakesAndForcedPoints() {
+		stakes = new ArrayList<>();
+		forcedPoints = new ArrayList<>();
+
+		forcedPoints.add(beginningStake);
 	}
 
 	private void distributeInterval(int beginning, int end, int i) {
@@ -40,18 +42,29 @@ public class Distributer {
 
 		while (last(stakeTemp) <= end) {
 			int geometryEnd = geometry.get(i).getEnd();
-			int nextStake = nextStake(stakeTemp, i, leftOvers);
-			
+			int nextStake = nextStake(stakeTemp, i, leftOvers, beginning, end);
+
 			if (geometryEnd >= nextStake) {
-				stakeTemp.add(nextStake);
-				leftOvers = 0.0;
-			} else if (geometry.size() == i+1) {
-				if (geometryEnd - last(stakeTemp) > 0.5*sMax(i)) {
-						stakeTemp.add(geometryEnd);
+				if (geometry.get(i).isColumnsAllowed()) {
+					stakeTemp.add(nextStake);
+					leftOvers = 0.0;
+				} else if (canBePlacedAfter(i, stakeTemp.size())) {
+					stakeTemp.clear();
+					forcedPoints.add(geometry.get(i+1).getBeginning());
+					distributeInterval(forcedPoints.get(forcedPoints.size()-2), forcedPoints.get(forcedPoints.size()-1), road.getGeometryIndex(forcedPoints.size()-2));
+					stakeTemp.add(stakes.get(stakes.size()-1));
+					stakes.remove(stakes.size()-1);
+					leftOvers = 0.0;
+				} else {
+
+				}
+			} else if (geometry.size() == i + 1) {
+				if (geometryEnd - last(stakeTemp) > 0.5 * sMax(i, beginning, end)) {
+					stakeTemp.add(geometryEnd);
 				}
 				break;
 			} else {
-				leftOvers += (nextStake - geometryEnd) / (double) sMax(i);
+				leftOvers += (nextStake - geometryEnd) / (double) sMax(i, beginning, end);
 				i++;
 			}
 		}
@@ -60,30 +73,52 @@ public class Distributer {
 
 	}
 
-	private int nextStake(List<Integer> stakeTemp, int i, Double leftOvers) {
+	private int nextStake(List<Integer> stakeTemp, int i, Double leftOvers, int beginning, int end) {
 		if (leftOvers > 0.0) {
-			return geometry.get(i).getBeginning() + (int) (leftOvers * sMax(i));
+			double nextStake = geometry.get(i).getBeginning() + (leftOvers * sMax(i, beginning, end));
+			int sMaxI = geometry.get(i).getSmax();
+			int sMax2 = geometry.get(i-1).getSmax();
+			if (nextStake > sMaxI && nextStake > sMax2) {
+				nextStake = sMaxI<sMax2?sMax2:sMaxI;
+				nextStake = last(stakeTemp) + nextStake;
+			}
+			return (int) Math.round(nextStake);
 		}
-		return last(stakeTemp) + sMax(i);
+		double nextStake = last(stakeTemp) + sMax(i, beginning, end);
+		return (int) Math.round(nextStake);
 	}
 
 	private int last(List<Integer> stakeTemp) {
-		return stakeTemp.get(stakeTemp.size()-1);
+		if (stakeTemp.isEmpty()) {
+			return 0;
+		}
+		return stakeTemp.get(stakeTemp.size() - 1);
 	}
 
-	private int sMax(int i) {
-		return (int) (smoothingFactor() * geometry.get(i).getSmax());
+	private boolean canBePlacedAfter(int restrictedInterval, int columns) {
+		int restrictionEnd = geometry.get(restrictedInterval).getEnd() + 1;
+		int intervalBeginning = forcedPoints.get(forcedPoints.size()-1);
+		double neededColumnsWithMaxSpacing = exactColumnCount(intervalBeginning, restrictionEnd);
+		return neededColumnsWithMaxSpacing >= columns;
+	}
+
+	private int sMax(int i, int beginning, int end) {
+		return (int) (smoothingFactor(beginning, end) * geometry.get(i).getSmax());
 	}
 
 	public List<Integer> getStakes() {
 		addStakes();
-		List<Integer> stakeExport = new ArrayList<>(stakes);
-		Collections.sort(stakeExport);
-		return stakeExport;
+		return sortedStakes();
 	}
 
-	private double smoothingFactor() {
-		return exactColumnCount() / getNeededColumns();
+	private List<Integer> sortedStakes() {
+		List<Integer> sorted = new ArrayList<>(stakes);
+		Collections.sort(sorted);
+		return sorted;
+	}
+
+	private double smoothingFactor(int beginning, int end) {
+		return exactColumnCount(beginning, end) / getNeededColumns(beginning, end);
 	}
 
 	public int getNeededColumns() {
@@ -91,10 +126,35 @@ public class Distributer {
 		return columns;
 	}
 
+	public int getNeededColumns(int beginning, int end) {
+		int columns = (int) Math.ceil(exactColumnCount(beginning, end));
+		return columns;
+	}
+
 	private double exactColumnCount() {
 		double columns = 0.0;
 		for (RoadGeometry interval : geometry) {
 			columns += interval.length() / (double) interval.getSmax();
+		}
+		return columns + 1;
+	}
+
+	private double exactColumnCount(int beginning, int end) {
+		double columns = 0.0;
+		for (RoadGeometry roadGeometry : geometry) {
+			if (road.intervalContainsGeometry(roadGeometry, beginning, end)) {
+				if (roadGeometry.getBeginning() >= beginning && roadGeometry.getEnd() <= end) {
+				columns += roadGeometry.length() / (double) roadGeometry.getSmax();
+				} else if (roadGeometry.getBeginning() >= beginning && roadGeometry.getEnd() > end) {
+					columns += (end - roadGeometry.getBeginning()) / (double) roadGeometry.getSmax();
+					break;
+				} else if (roadGeometry.getBeginning() < beginning && roadGeometry.getEnd() <= end) {
+					columns += (roadGeometry.getEnd() - beginning) / (double) roadGeometry.getSmax();
+				} else if (roadGeometry.getBeginning() < beginning && roadGeometry.getEnd() > end) {
+					columns += (end - beginning) / (double) roadGeometry.getSmax();
+					break;
+				}
+			}
 		}
 		return columns + 1;
 	}

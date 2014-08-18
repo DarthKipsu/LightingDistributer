@@ -5,13 +5,14 @@ import lightdistributer.logic.Distributer;
 import org.junit.After;
 import org.junit.AfterClass;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
 public class DistributerTest {
-	private Road road = new Road(50);
-	private Distributer distributer = new Distributer(road, 0);	
+	private Road defaultRoad = new Road(50);
+	private Distributer distributer = new Distributer(defaultRoad, 0);	
 	
 	public DistributerTest() {
 	}
@@ -26,10 +27,10 @@ public class DistributerTest {
 	
 	@Before
 	public void setUp() {
-		road.addStraightSection(100, true);
-		road.addOutsideCurve(280, true, 500);
-		road.addInsideCurve(340, true, 100);
-		road.addStraightSection(400, true);
+		defaultRoad.addStraightSection(100, true);
+		defaultRoad.addOutsideCurve(280, true, 500);
+		defaultRoad.addInsideCurve(340, true, 100);
+		defaultRoad.addStraightSection(400, true);
 	}
 	
 	@After
@@ -38,7 +39,7 @@ public class DistributerTest {
 
 	@Test
 	public void countsNeededColumns() {
-		int columnCount = distributer.countNeededColumns();
+		int columnCount = distributer.getNeededColumns();
 		int expected = 10;
 
 		assertEquals(expected, columnCount);
@@ -46,8 +47,8 @@ public class DistributerTest {
 	
 	@Test
 	public void countsNeededColumns2() {
-		road.addOutsideCurve(650, true, 350);
-		int columnCount = distributer.countNeededColumns();
+		defaultRoad.addOutsideCurve(650, true, 350);
+		int columnCount = distributer.getNeededColumns();
 		int expected = 16;
 
 		assertEquals(expected, columnCount);
@@ -55,26 +56,41 @@ public class DistributerTest {
 
 	@Test
 	public void createsAsManyStakesAsNeededColumns() {
-		int columnCount = distributer.countNeededColumns();
+		int columnCount = distributer.getNeededColumns();
 		List<Integer> stakes = distributer.getStakes();
-		System.out.println("stakes: " + stakes);
+		System.out.println("stakes (1): " + stakes);
 
 		assertEquals(columnCount, stakes.size());
 	}
 
 	@Test
 	public void leaveIntervalEmptyIfNoColumnsAreNeeded() {
-		Road road2 = new Road(50);
-		road2.addStraightSection(70, true);
-		road2.addStraightSection(75, true);
-		road2.addStraightSection(95, true);
-		Distributer distributer2 = new Distributer(road2, 0);
+		Road road = new Road(50);
+		road.addStraightSection(70, true);
+		road.addStraightSection(75, true);
+		road.addStraightSection(95, true);
+		Distributer distributer2 = new Distributer(road, 0);
 
-		int neededColumns = distributer2.countNeededColumns();
+		int neededColumns = distributer2.getNeededColumns();
 		int distributedStakeCount = distributer2.getStakes().size();
-		System.out.println("stakes: " + distributer2.getStakes());
+		System.out.println("stakes (2): " + distributer2.getStakes());
 
 		assertEquals(neededColumns, distributedStakeCount);
+	}
+	
+	@Test
+	public void dontPlaceColumnsOnRestrictedAreas() {
+		Road road = new Road(50);
+		road.addStraightSection(44, true);
+		road.addStraightSection(48, false);
+		road.addStraightSection(90, true);
+		Distributer distributer2 = new Distributer(road, 0);
+
+		int secondStake = distributer2.getStakes().get(1);
+		boolean stakeNotOnRestrictedGeometry = secondStake <= 44 || secondStake > 48;
+		System.out.println("stakes (3): " + distributer2.getStakes());
+
+		assertTrue(stakeNotOnRestrictedGeometry);
 	}
 	
 }

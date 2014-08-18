@@ -1,6 +1,9 @@
 
 package lightdistributer;
 
+import lightdistributer.domain.Road;
+import lightdistributer.logic.Distributer;
+
 public class LightDistributer {
 
 	/**
