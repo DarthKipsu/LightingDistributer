@@ -91,6 +91,7 @@ public class DistributerTest {
 		System.out.println("stakes (3): " + distributer2.getStakes());
 
 		assertTrue(stakeNotOnRestrictedGeometry);
+		assertEquals(3, distributer2.getStakes().size());
 	}
 	
 }

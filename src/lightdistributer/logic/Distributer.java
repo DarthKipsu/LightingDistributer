@@ -2,9 +2,7 @@ package lightdistributer.logic;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 import lightdistributer.domain.RoadGeometry;
 import lightdistributer.domain.Road;
 
@@ -12,6 +10,7 @@ public class Distributer {
 
 	private Road road;
 	private List<RoadGeometry> geometry;
+	private ColumnCounter counter;
 	private List<Integer> stakes;
 	private List<Integer> forcedPoints;
 	private int beginningStake;
@@ -20,6 +19,7 @@ public class Distributer {
 		this.road = road;
 		this.beginningStake = beginningStake;
 		geometry = road.getRoadGeometry();
+		counter = new ColumnCounter(road, geometry);
 	}
 
 	private void addStakes() {
@@ -75,7 +75,8 @@ public class Distributer {
 
 	private int nextStake(List<Integer> stakeTemp, int i, Double leftOvers, int beginning, int end) {
 		if (leftOvers > 0.0) {
-			double nextStake = geometry.get(i).getBeginning() + (leftOvers * sMax(i, beginning, end));
+			double nextStake = geometry.get(i).getBeginning() +
+				(leftOvers * sMax(i, beginning, end));
 			int sMaxI = geometry.get(i).getSmax();
 			int sMax2 = geometry.get(i-1).getSmax();
 			if (nextStake > sMaxI && nextStake > sMax2) {
@@ -98,7 +99,8 @@ public class Distributer {
 	private boolean canBePlacedAfter(int restrictedInterval, int columns) {
 		int restrictionEnd = geometry.get(restrictedInterval).getEnd() + 1;
 		int intervalBeginning = forcedPoints.get(forcedPoints.size()-1);
-		double neededColumnsWithMaxSpacing = exactColumnCount(intervalBeginning, restrictionEnd);
+		double neededColumnsWithMaxSpacing =
+			counter.exactColumnCount(intervalBeginning, restrictionEnd);
 		return neededColumnsWithMaxSpacing >= columns;
 	}
 
@@ -118,45 +120,12 @@ public class Distributer {
 	}
 
 	private double smoothingFactor(int beginning, int end) {
-		return exactColumnCount(beginning, end) / getNeededColumns(beginning, end);
+		return counter.exactColumnCount(beginning, end) /
+			counter.getNeededColumns(beginning, end);
 	}
 
 	public int getNeededColumns() {
-		int columns = (int) Math.ceil(exactColumnCount());
-		return columns;
-	}
-
-	public int getNeededColumns(int beginning, int end) {
-		int columns = (int) Math.ceil(exactColumnCount(beginning, end));
-		return columns;
-	}
-
-	private double exactColumnCount() {
-		double columns = 0.0;
-		for (RoadGeometry interval : geometry) {
-			columns += interval.length() / (double) interval.getSmax();
-		}
-		return columns + 1;
-	}
-
-	private double exactColumnCount(int beginning, int end) {
-		double columns = 0.0;
-		for (RoadGeometry roadGeometry : geometry) {
-			if (road.intervalContainsGeometry(roadGeometry, beginning, end)) {
-				if (roadGeometry.getBeginning() >= beginning && roadGeometry.getEnd() <= end) {
-				columns += roadGeometry.length() / (double) roadGeometry.getSmax();
-				} else if (roadGeometry.getBeginning() >= beginning && roadGeometry.getEnd() > end) {
-					columns += (end - roadGeometry.getBeginning()) / (double) roadGeometry.getSmax();
-					break;
-				} else if (roadGeometry.getBeginning() < beginning && roadGeometry.getEnd() <= end) {
-					columns += (roadGeometry.getEnd() - beginning) / (double) roadGeometry.getSmax();
-				} else if (roadGeometry.getBeginning() < beginning && roadGeometry.getEnd() > end) {
-					columns += (end - beginning) / (double) roadGeometry.getSmax();
-					break;
-				}
-			}
-		}
-		return columns + 1;
+		return counter.getNeededColumns();
 	}
 
 }
