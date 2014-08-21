@@ -79,7 +79,7 @@ public class DistributerTest {
 	}
 	
 	@Test
-	public void dontPlaceColumnsOnRestrictedAreas() {
+	public void divideColumnsOverRestrictedAreas() {
 		Road road = new Road(50);
 		road.addStraightSection(44, true);
 		road.addStraightSection(48, false);
@@ -89,6 +89,22 @@ public class DistributerTest {
 		int secondStake = distributer2.getStakes().get(1);
 		boolean stakeNotOnRestrictedGeometry = secondStake <= 44 || secondStake > 48;
 		System.out.println("stakes (3): " + distributer2.getStakes());
+
+		assertTrue(stakeNotOnRestrictedGeometry);
+		assertEquals(3, distributer2.getStakes().size());
+	}
+
+	@Test
+	public void placeColumnsBeforeRestrictionIfCantReachOverIt() {
+		Road road = new Road(50);
+		road.addStraightSection(45, true);
+		road.addStraightSection(58, false);
+		road.addStraightSection(90, true);
+		Distributer distributer2 = new Distributer(road, 0);
+
+		int secondStake = distributer2.getStakes().get(1);
+		boolean stakeNotOnRestrictedGeometry = secondStake <= 45 && secondStake > 40;
+		System.out.println("stakes (4): " + distributer2.getStakes());
 
 		assertTrue(stakeNotOnRestrictedGeometry);
 		assertEquals(3, distributer2.getStakes().size());

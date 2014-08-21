@@ -47,7 +47,7 @@ public class Distributer {
 	}
 
 	private void addStakesToStakeTemp(List<Integer> stakeTemp, int end, int i, Double leftOvers, int beginning) {
-		while (last(stakeTemp) <= end) {
+		while (last(stakeTemp) < end) {
 			int geometryEnd = geometry.get(i).getEnd();
 			int nextStake = nextStake(stakeTemp, i, leftOvers, beginning, end);
 
@@ -67,16 +67,27 @@ public class Distributer {
 	private void addNewStake(int i, List<Integer> stakeTemp, int nextStake) {
 		if (geometry.get(i).isColumnsAllowed()) {
 			stakeTemp.add(nextStake);
-		} else if (canBePlacedAfter(i, stakeTemp.size())) {
+		} else if (canBePlacedAfter(i, stakeTemp.size()+1)) {
 			placeStakeAfterForcedPoint(stakeTemp, i);
 		} else {
-			
+			placeStakeBeforeForcedPoint(stakeTemp, i);
 		}
 	}
 
 	private void placeStakeAfterForcedPoint(List<Integer> stakeTemp, int i) {
 		stakeTemp.clear();
 		forcedPoints.add(geometry.get(i + 1).getBeginning());
+
+		distributeInterval(forcedPoints.get(forcedPoints.size() - 2),
+			forcedPoints.get(forcedPoints.size() - 1), road.getGeometryIndex(forcedPoints.size() - 2));
+
+		stakeTemp.add(stakes.get(stakes.size() - 1));
+		stakes.remove(stakes.size() - 1);
+	}
+
+	private void placeStakeBeforeForcedPoint(List<Integer> stakeTemp, int i) {
+		stakeTemp.clear();
+		forcedPoints.add(geometry.get(i - 1).getEnd());
 
 		distributeInterval(forcedPoints.get(forcedPoints.size() - 2),
 			forcedPoints.get(forcedPoints.size() - 1), road.getGeometryIndex(forcedPoints.size() - 2));
@@ -95,9 +106,13 @@ public class Distributer {
 	private int nextStake(List<Integer> stakeTemp, int i, Double leftOvers, int beginning, int end) {
 		if (leftOvers > 0.0) {
 			return leftoversPlusSmax(i, leftOvers, beginning, end, stakeTemp);
-		} else {
-			return lastStakePlusSmax(stakeTemp, i, beginning, end);
+		} 
+		int nextStake = lastStakePlusSmax(stakeTemp, i, beginning, end);
+		
+		if (nextStake > end) {
+			return end;
 		}
+		return nextStake;
 	}
 
 	private int leftoversPlusSmax(int i, Double leftOvers, int beginning, int end, List<Integer> stakeTemp) {
@@ -136,7 +151,7 @@ public class Distributer {
 		double neededColumnsWithMaxSpacing
 			= counter.exactColumnCount(intervalBeginning, restrictionEnd);
 
-		return neededColumnsWithMaxSpacing >= columns;
+		return neededColumnsWithMaxSpacing <= columns;
 	}
 
 	private int sMax(int i, int beginning, int end) {
