@@ -18,9 +18,9 @@ public class ColumnCounter {
 	private List<RoadGeometry> geometry;
 	private Road road;
 
-	public ColumnCounter(Road road, List<RoadGeometry> geometry) {
+	public ColumnCounter(Road road) {
 		this.road = road;
-		this.geometry = geometry;
+		this.geometry = road.getRoadGeometry();
 	}
 
 	private double countColumnsBetween(int beginning, int end) {
