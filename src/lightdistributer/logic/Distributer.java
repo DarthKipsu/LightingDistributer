@@ -75,20 +75,18 @@ public class Distributer {
 	}
 
 	private void placeStakeAfterForcedPoint(List<Integer> stakeTemp, int i) {
-		stakeTemp.clear();
 		forcedPoints.add(geometry.get(i + 1).getBeginning());
-
-		distributeInterval(forcedPoints.get(forcedPoints.size() - 2),
-			forcedPoints.get(forcedPoints.size() - 1), road.getGeometryIndex(forcedPoints.size() - 2));
-
-		stakeTemp.add(stakes.get(stakes.size() - 1));
-		stakes.remove(stakes.size() - 1);
+		divideColumnsBetweenForcedPoints(stakeTemp);
 	}
 
 	private void placeStakeBeforeForcedPoint(List<Integer> stakeTemp, int i) {
-		stakeTemp.clear();
 		forcedPoints.add(geometry.get(i - 1).getEnd());
+		divideColumnsBetweenForcedPoints(stakeTemp);
+	}
 
+	private void divideColumnsBetweenForcedPoints(List<Integer> stakeTemp) {
+		stakeTemp.clear();
+		
 		distributeInterval(forcedPoints.get(forcedPoints.size() - 2),
 			forcedPoints.get(forcedPoints.size() - 1), road.getGeometryIndex(forcedPoints.size() - 2));
 
