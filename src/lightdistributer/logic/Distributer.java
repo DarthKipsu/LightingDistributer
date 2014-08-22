@@ -9,7 +9,6 @@ import lightdistributer.domain.Road;
 public class Distributer {
 
 	private Road road;
-	private List<RoadGeometry> geometry;
 	private ColumnCounter counter;
 	private List<Integer> stakes;
 	private List<Integer> forcedPoints;
@@ -43,8 +42,7 @@ public class Distributer {
 		stakes = new ArrayList<>();
 		forcedPoints = new ArrayList<>();
 		forcedPoints.add(beginningStake);
-		geometry = road.getRoadGeometry();
-		endStake = geometry.get(geometry.size() - 1).getEnd();
+		endStake = road.getEndStakeFor(road.getSize()-1);
 	}
 
 	private void distributeInterval(int i) {
@@ -89,7 +87,7 @@ public class Distributer {
 	}
 
 	private int endOf(int i) {
-		return geometry.get(i).getEnd();
+		return road.getEndStakeFor(i);
 	}
 
 	private int nextStake(int i) {
@@ -100,14 +98,14 @@ public class Distributer {
 	}
 
 	private int leftoversPlusSmax(int i) {
-		double nextStake = geometry.get(i).getBeginning()
+		double nextStake = road.getBeginningStakeFor(i)
 			+ (leftOvers * sMax(i));
 		nextStake = makeSureSmaxIsntViolated(i, nextStake);
 		return (int) Math.round(nextStake);
 	}
 
 	private int sMax(int i) {
-		return (int) (smoothingFactor() * geometry.get(i).getSmax());
+		return (int) (smoothingFactor() * road.getSmax(i));
 	}
 
 	private double smoothingFactor() {
@@ -116,8 +114,8 @@ public class Distributer {
 	}
 
 	private double makeSureSmaxIsntViolated(int i, double nextStake) {
-		int sMaxI = geometry.get(i).getSmax();
-		int sMax2 = geometry.get(i - 1).getSmax();
+		int sMaxI = road.getSmax(i);
+		int sMax2 = road.getSmax(i-1);
 
 		if (nextStake > sMaxI && nextStake > sMax2) {
 			nextStake = sMaxI < sMax2 ? sMax2 : sMaxI;
@@ -142,7 +140,7 @@ public class Distributer {
 	}
 
 	private boolean geometryIsntRestricted(int i) {
-		return geometry.get(i).isColumnsAllowed();
+		return road.isColumnsAllowed(i);
 	}
 
 	private boolean sMaxAllowsPlacingAfterRestriction(int i) {
@@ -150,7 +148,7 @@ public class Distributer {
 	}
 
 	private boolean canBePlacedAfter(int i) {
-		int restrictionEnd = geometry.get(i).getEnd() + 1;
+		int restrictionEnd = road.getEndStakeFor(i) + 1;
 		int intervalBeginning = forcedPoints.get(forcedPoints.size() - 1);
 		double neededColumnsWithMaxSpacing
 			= counter.exactColumnCount(intervalBeginning, restrictionEnd);
@@ -165,12 +163,12 @@ public class Distributer {
 	}
 
 	private void placeStakeAfterForcedPoint(int i) {
-		forcedPoints.add(geometry.get(i + 1).getBeginning());
+		forcedPoints.add(road.getBeginningStakeFor(i+1));
 		divideColumnsBetweenForcedPoints();
 	}
 
 	private void placeStakeBeforeForcedPoint(int i) {
-		forcedPoints.add(geometry.get(i - 1).getEnd());
+		forcedPoints.add(road.getEndStakeFor(i-1));
 		divideColumnsBetweenForcedPoints();
 	}
 
@@ -198,7 +196,7 @@ public class Distributer {
 	}
 
 	private boolean onlyOneStakeLeft(int i) {
-		return geometry.size() == i + 1;
+		return road.getSize() == i + 1;
 	}
 
 	private void addRestOfTheGeometryToLeftovers(int i) {

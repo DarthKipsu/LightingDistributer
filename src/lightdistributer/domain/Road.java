@@ -87,8 +87,28 @@ public class Road {
 		return geometry;
 	}
 
+	public int getSize() {
+		return geometry.size();
+	}
+
+	public int getEndStakeFor(int section) {
+		return geometry.get(section).getEnd();
+	}
+
+	public int getBeginningStakeFor(int section) {
+		return geometry.get(section).getBeginning();
+	}
+
+	public boolean isColumnsAllowed(int section) {
+		return geometry.get(section).isColumnsAllowed();
+	}
+
 	public int getSMax() {
 		return sMax;
+	}
+
+	public int getSmax(int section) {
+		return geometry.get(section).getSmax();
 	}
 
 }
