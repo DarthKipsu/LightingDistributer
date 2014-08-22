@@ -2,29 +2,21 @@ package lightdistributer;
 
 
 import javafx.application.Application;
-import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
 import javafx.scene.Scene;
-import javafx.scene.control.Button;
+import javafx.scene.layout.GridPane;
 import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
+import lightdistributer.ui.UserInterface;
 
 public class LightDistributer extends Application {
 	
 	@Override
 	public void start(Stage primaryStage) {
-		Button btn = new Button();
-		btn.setText("Say 'Hello World'");
-		btn.setOnAction(new EventHandler<ActionEvent>() {
+		UserInterface ui = new UserInterface();
+		GridPane grid = ui.addGridPane();
 			
-			@Override
-			public void handle(ActionEvent event) {
-				System.out.println("Hello World!");
-			}
-		});
-		
 		StackPane root = new StackPane();
-		root.getChildren().add(btn);
+		root.getChildren().add(grid);
 		
 		Scene scene = new Scene(root, 500, 650);
 		
@@ -33,9 +25,6 @@ public class LightDistributer extends Application {
 		primaryStage.show();
 	}
 
-	/**
-	 * @param args the command line arguments
-	 */
 	public static void main(String[] args) {
 		launch(args);
 	}
