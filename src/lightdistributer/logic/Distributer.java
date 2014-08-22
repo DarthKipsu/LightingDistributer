@@ -3,7 +3,6 @@ package lightdistributer.logic;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import lightdistributer.domain.RoadGeometry;
 import lightdistributer.domain.Road;
 
 public class Distributer {
