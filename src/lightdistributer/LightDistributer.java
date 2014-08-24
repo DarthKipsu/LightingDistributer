@@ -6,6 +6,7 @@ import javafx.scene.Scene;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
+import lightdistributer.domain.Road;
 import lightdistributer.ui.UserInterface;
 
 public class LightDistributer extends Application {
@@ -18,7 +19,7 @@ public class LightDistributer extends Application {
 		StackPane root = new StackPane();
 		root.getChildren().add(grid);
 		
-		Scene scene = new Scene(root, 500, 650);
+		Scene scene = new Scene(root, 300, 650);
 		
 		primaryStage.setTitle("Ligt distributer");
 		primaryStage.setScene(scene);
