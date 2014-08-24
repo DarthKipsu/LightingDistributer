@@ -35,4 +35,6 @@ public abstract class RoadGeometry {
 
 	abstract public int getSmax();
 
+	abstract public void setSmax(int sMax);
+
 }

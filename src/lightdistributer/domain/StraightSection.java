@@ -13,5 +13,10 @@ public class StraightSection extends RoadGeometry {
 	public int getSmax() {
 		return sMax;
 	}
+
+	@Override
+	public void setSmax(int sMax) {
+		this.sMax = sMax;
+	}
 	
 }

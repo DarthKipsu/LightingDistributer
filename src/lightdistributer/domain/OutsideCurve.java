@@ -8,10 +8,15 @@ public class OutsideCurve extends RoadGeometry {
 	public OutsideCurve(int beginning, int end, boolean columnsAllowed, int sMax, int radius) {
 		super(beginning, end, columnsAllowed);
 		this.radius = radius;
-		this.sMax = setSmax(sMax);
+		this.sMax = sMax(sMax);
+	}
+
+	@Override
+	public void setSmax(int sMax) {
+		this.sMax = sMax(sMax);
 	}
 	
-	private int setSmax(int sMax) {
+	private int sMax(int sMax) {
 		if (radius <= 100) {
 			return (int) Math.floor(0.8 * sMax);
 		} else if (radius >= 800) {

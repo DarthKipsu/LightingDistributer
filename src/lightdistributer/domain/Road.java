@@ -111,4 +111,12 @@ public class Road {
 		return geometry.get(section).getSmax();
 	}
 
+	public void setSmax(int sMax) {
+		this.sMax = sMax;
+
+		for (RoadGeometry section : geometry) {
+			section.setSmax(sMax);
+		}
+	}
+
 }

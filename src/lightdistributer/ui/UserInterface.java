@@ -15,11 +15,14 @@ import javafx.scene.layout.Pane;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
+import lightdistributer.domain.Road;
 
 public class UserInterface {
 	private GridPane grid;
+	private Road road;
 
 	public UserInterface() {
+		road = new Road(50);
 		grid = new GridPane();
 		grid.setPadding(new Insets(5));
 		grid.setHgap(10);
@@ -56,8 +59,13 @@ public class UserInterface {
 	private void addSmax() {
 		Text sMaxText = new Text("Maximum column spacing:");
 		sMaxText.setFont(Font.font("Arial", 12));
-		TextField sMAx = new TextField("Smax");
+		TextField sMAx = new TextField();
+		sMAx.setPromptText("Smax");
 		sMAx.setPrefWidth(80);
+		Button set = new Button("set");
+		set.setPrefWidth(80);
+		set.setOnAction(new sMaxEvent(sMAx, road));
+		grid.add(set, 1, 3);
 		grid.add(sMaxText, 0, 2);
 		grid.add(sMAx, 1, 2);
 		addSpace(3);
