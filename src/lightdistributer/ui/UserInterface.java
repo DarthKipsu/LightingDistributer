@@ -3,6 +3,8 @@ package lightdistributer.ui;
 
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.Button;
@@ -78,18 +80,22 @@ public class UserInterface {
 	}
 
 	private void addRoadSelection() {
-		addComboBox();
-		addEndStakeField();
-		addRadiusField();
-		addRestrictionBox();
+		TextField radius = addRadiusField();
+		ComboBox combo = addComboBox(radius);
+		TextField endStake = addEndStakeField();
+		CheckBox restricted = addRestrictionBox();
 		addSpace(7);
-		addRoadSelectionButton();
+		EventHandler<ActionEvent> selectionEvent = new selectionEvent(combo, endStake,
+			radius, restricted, road);
+		addRoadSelectionButton(selectionEvent);
 	}
 
-	private void addComboBox() {
+	private ComboBox addComboBox(TextField radius) {
 		ObservableList<String> geometries = addTypes();
 		ComboBox combo = new ComboBox(geometries);
+		combo.setOnAction(new radiusEvent(radius, combo));
 		grid.add(combo, 0, 5);
+		return combo;
 	}
 
 	private ObservableList<String> addTypes() {
@@ -100,29 +106,33 @@ public class UserInterface {
 		);
 	}
 
-	private void addEndStakeField() {
+	private TextField addEndStakeField() {
 		TextField endStake = new TextField();
 		endStake.setPromptText("end stake");
 		endStake.setPrefWidth(80);
 		grid.add(endStake, 1, 5);
+		return endStake;
 	}
 
-	private void addRadiusField() {
+	private TextField addRadiusField() {
 		TextField radius = new TextField();
 		radius.setPromptText("radius");
 		radius.setPrefWidth(65);
 		radius.setDisable(true);
 		grid.add(radius, 1, 6);
+		return radius;
 	}
 
-	private void addRestrictionBox() {
+	private CheckBox addRestrictionBox() {
 		CheckBox restricted = new CheckBox("restricted");
 		grid.add(restricted, 0, 6);
+		return restricted;
 	}
 
-	private void addRoadSelectionButton() {
+	private void addRoadSelectionButton(EventHandler<ActionEvent> selectionEvent) {
 		Button button = new Button("Add road geometry");
 		button.setPrefWidth(250);
+		button.setOnAction(selectionEvent);
 		grid.add(button, 0, 8, 2, 1);
 		addSpace(9);
 	}
