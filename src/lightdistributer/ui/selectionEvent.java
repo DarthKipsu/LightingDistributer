@@ -40,6 +40,10 @@ public class selectionEvent implements EventHandler<ActionEvent> {
 
 			try {
 				end = Integer.parseInt(endStake.getText().trim());
+				if (end < 0 || end <= road.getLength()) {
+					System.out.println("End stake too small!");
+					return;
+				}
 				if (selectedCombo > 0 && radius.getText().isEmpty()) {
 					System.out.println("Choose curve radus!");
 				} else if (selectedCombo == 0) {

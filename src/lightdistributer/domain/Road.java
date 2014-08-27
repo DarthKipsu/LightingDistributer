@@ -91,6 +91,13 @@ public class Road {
 		return geometry.size();
 	}
 
+	public int getLength() {
+		if (geometry.isEmpty()) {
+			return 0;
+		}
+		return geometry.get(getSize()-1).getEnd();
+	}
+
 	public int getEndStakeFor(int section) {
 		return geometry.get(section).getEnd();
 	}
