@@ -31,5 +31,10 @@ public class OutsideCurve extends RoadGeometry {
 	public int getSmax() {
 		return sMax;
 	}
-	
+
+	@Override
+	public String toString() {
+		return getBeginning() + "-" + getEnd() + ", OC radius " + radius;
+	}
+
 }

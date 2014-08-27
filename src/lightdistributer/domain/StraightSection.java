@@ -18,5 +18,10 @@ public class StraightSection extends RoadGeometry {
 	public void setSmax(int sMax) {
 		this.sMax = sMax;
 	}
-	
+
+	@Override
+	public String toString() {
+		return getBeginning() + "-" + getEnd() + ", straight";
+	}
+
 }

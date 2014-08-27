@@ -42,7 +42,7 @@ public class UserInterface {
 		addSmax();
 		addInstruction();
 		addRoadSelection();
-		showGeometries();
+		addCalculateResults();
 	}
 
 	private void addTitle() {
@@ -84,9 +84,10 @@ public class UserInterface {
 		ComboBox combo = addComboBox(radius);
 		TextField endStake = addEndStakeField();
 		CheckBox restricted = addRestrictionBox();
+		ListView<String> list = showGeometries();
 		addSpace(7);
 		EventHandler<ActionEvent> selectionEvent = new selectionEvent(combo, endStake,
-			radius, restricted, road);
+			radius, restricted, list, road);
 		addRoadSelectionButton(selectionEvent);
 	}
 
@@ -137,10 +138,18 @@ public class UserInterface {
 		addSpace(9);
 	}
 
-	private void showGeometries() {
+	private ListView<String> showGeometries() {
 		ListView<String> list = new ListView<>();
 		grid.add(list, 0, 10, 2, 1);
 		addSpace(11);
+		return list;
+	}
+
+	private void addCalculateResults() {
+		Button button = new Button("Calculate stakes");
+		button.setPrefWidth(250);
+		grid.add(button, 0, 11, 2, 1);
+		addSpace(12);
 	}
 
 }

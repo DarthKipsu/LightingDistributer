@@ -31,5 +31,10 @@ public class InsideCurve extends RoadGeometry {
 	public int getSmax() {
 		return sMax;
 	}
-	
+
+	@Override
+	public String toString() {
+		return getBeginning() + "-" + getEnd() + ", IC radius " + radius;
+	}
+
 }
