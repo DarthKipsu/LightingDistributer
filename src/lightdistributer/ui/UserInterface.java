@@ -62,7 +62,7 @@ public class UserInterface {
 		Text sMaxText = new Text("Maximum column spacing:");
 		sMaxText.setFont(Font.font("Arial", 12));
 		TextField sMAx = new TextField();
-		sMAx.setPromptText("Smax");
+		sMAx.setPromptText("50");
 		sMAx.setPrefWidth(80);
 		Button set = new Button("set");
 		set.setPrefWidth(80);
