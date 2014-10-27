@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import lightdistributer.exceptions.NoSuchGeometryException;
+import lightdistributer.exceptions.RoadHasNoGeometriesException;
 
 public class Road {
 
@@ -88,19 +88,19 @@ public class Road {
 		return geometry;
 	}
 
-	public RoadGeometry getLastRoadGeometry() throws NoSuchGeometryException {
+	public RoadGeometry getLastRoadGeometry() {
 		try {
 			return geometry.get(geometry.size() - 1);
 		} catch (Exception e) {
-			throw new NoSuchGeometryException();
+			throw new RoadHasNoGeometriesException();
 		}
 	}
 	
-	public void removeLastRoadGeometry() throws NoSuchGeometryException {
+	public void removeLastRoadGeometry() {
 		try {
 			geometry.remove(geometry.size() - 1);
 		} catch (Exception e) {
-			throw new NoSuchGeometryException();
+			throw new RoadHasNoGeometriesException();
 		}
 	}
 

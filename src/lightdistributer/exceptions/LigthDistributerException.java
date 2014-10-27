@@ -1,6 +1,6 @@
 
 package lightdistributer.exceptions;
 
-public class LigthDistributerException extends Exception {
+public class LigthDistributerException extends RuntimeException {
 	
 }
