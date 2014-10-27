@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import lightdistributer.exceptions.NoSuchGeometryException;
 
 public class Road {
 
@@ -47,7 +48,7 @@ public class Road {
 		addInsideCurve(sectionBeginning(), end, columnsAllowed, radius);
 	}
 
-	private int sectionBeginning() {
+	public int sectionBeginning() {
 		if (geometry.isEmpty()) {
 			return 0;
 		} else {
@@ -85,6 +86,22 @@ public class Road {
 
 	public List<RoadGeometry> getRoadGeometry() {
 		return geometry;
+	}
+
+	public RoadGeometry getLastRoadGeometry() throws NoSuchGeometryException {
+		try {
+			return geometry.get(geometry.size() - 1);
+		} catch (Exception e) {
+			throw new NoSuchGeometryException();
+		}
+	}
+	
+	public void removeLastRoadGeometry() throws NoSuchGeometryException {
+		try {
+			geometry.remove(geometry.size() - 1);
+		} catch (Exception e) {
+			throw new NoSuchGeometryException();
+		}
 	}
 
 	public int getSize() {
